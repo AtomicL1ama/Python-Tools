@@ -5,35 +5,43 @@
 
 import os
 
-def renameFiles(path, folder_name):
+def drill(path, folder_name):
     print(f"Renaming contents of {folder_name}")
     for count, filename in enumerate(os.listdir(f"{path}{folder_name}")):
         if (filename.find(".")<0):
             print(f"Opening \"{filename}\"...")
             drill_path = f"{path}{folder_name}/"
-            renameFiles(drill_path, filename)
-        else:    
-            file_extention = filename[filename.rindex("."):]
-            new_name = f"{folder_name}_{str(count)}{file_extention}"
-            source_file = f"{path}{folder_name}/{filename}"
-            final_name = f"{path}{folder_name}/{new_name}"
-            os.rename(source_file, final_name)
-            print(f"Renamed {filename} to {new_name}")
+            drill(drill_path, filename)
+        else:   
+            renameFile(path, folder_name, count, filename)
+            
+def renameFile(path, folder_name, count, filename):
+    names = buildFileNames(path, folder_name, count, filename)
+    os.rename(names[1],names[2])
+
+def buildFileNames(path, folder_name, count, filename):
+    file_extention = filename[filename.rindex("."):]
+    new_name = f"{folder_name}_{str(count)}{file_extention}"
+    source_file = f"{path}{folder_name}/{filename}"
+    final_name = f"{path}{folder_name}/{new_name}"
+    if os.path.exists(final_name) or filename==new_name:
+        new_name = f"{folder_name}_0{str(count)}{file_extention}"
+        source_file = f"{path}{folder_name}/{filename}"
+        final_name = f"{path}{folder_name}/{new_name}"
+    return (new_name,source_file,final_name)
 
 def getPath():
-    return input('Provide a folder path to rename it\'s contents: ')
- 
-def breakPath(path):
+    msg = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+    msg = f"{msg}Provide a folder path to rename it\'s contents: "
+    path = input(f"{msg}")
     x = path.rindex("\\")+1
     path_root = path[:x]
     root_folder = path[x:]
     return (path_root, root_folder)
 
 def begin():
-    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    target_path = getPath()
-    target_roots = breakPath(target_path)
-    renameFiles(target_roots[0], target_roots[1])
+    target_roots = getPath()
+    drill(target_roots[0], target_roots[1])
 
 #~~~~~~~~~~~~~~~~~~ MAIN ~~~~~~~~~~~~~~~~~~#
 
