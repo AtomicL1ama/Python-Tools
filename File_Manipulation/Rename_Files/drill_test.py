@@ -1,4 +1,4 @@
-import os, time
+import os
 
 def getPath():
     return input('Provide a folder path to review it\'s contents: ')
